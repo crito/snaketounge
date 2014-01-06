@@ -16,6 +16,11 @@ class UploadForm extends View
     console.log('File selected.')
 
   startUploading: ->
+    formData = new FormData(@$el.find('form')[0])
+    request  = new XMLHttpRequest
+
+    request.open("POST", "/upload")
+    request.send(formData)
     console.log('Start Uploading.')
 
 # Export
