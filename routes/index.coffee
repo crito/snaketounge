@@ -1,4 +1,4 @@
-posts = require('./posts')
+posts = require('./upload')
 
 module.exports = (app) ->
-  app.get('/posts', posts.show)
+  app.post('/upload', upload.create)
