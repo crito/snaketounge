@@ -3,10 +3,20 @@ $ = window.$
 
 # View
 class UploadForm extends View
-  el: $('.upload_form').remove().first().prop('outerHTML')
+  el: $('.upload-form').remove().first().prop('outerHTML')
 
   elements:
-    'form': '$upload_form'
+    'form': '$upload-form'
+
+  events:
+    'change input': 'fileSelected'
+    'click input[type=button]': 'startUploading'
+
+  fileSelected: ->
+    console.log('File selected.')
+
+  startUploading: ->
+    console.log('Start Uploading')
 
 # Export
 module.exports = {UploadForm}

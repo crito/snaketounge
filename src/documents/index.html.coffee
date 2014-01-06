@@ -6,12 +6,12 @@ title: 'Home'
 aside '.app', -> \
 div '.container', ->
   
-aside '.upload_form-container', -> \
-section '.upload_form', ->
+aside '.upload-form-container', -> \
+section '.upload-form', ->
   form enctype: "multipart/form-data", method: "post", action: "upload", ->
     div ->
       label for: "myfile", -> "Please select file"
       div ->
-        input type: "file", name: "myfile", id: "myfile", onchange: "fileSelected();"
+        input type: "file", name: "myfile", id: "myfile"
       div ->
-        input type: "button", value: "Upload", onclick: "startUploading();"
+        input type: "button", value: "Upload"
