@@ -1,5 +1,5 @@
 doctype 5
-html ->
+html lang: "en", ->
   head ->
     title @getPreparedTitle()
     meta charset: "utf-8"

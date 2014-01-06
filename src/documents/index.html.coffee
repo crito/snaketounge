@@ -3,12 +3,14 @@ layout: 'default'
 title: 'Home'
 ---
 
-div ->
-  form id: "upload_form", enctype: "multipart/form-data", method: "post", action: "upload", ->
+aside '.app', -> \
+div '.container', ->
+  
+aside '.upload_form-container', -> \
+section '.upload_form', ->
+  form enctype: "multipart/form-data", method: "post", action: "upload", ->
     div ->
-      div ->
-        label for: "myfile", ->
-          "Please select file"
+      label for: "myfile", -> "Please select file"
       div ->
         input type: "file", name: "myfile", id: "myfile", onchange: "fileSelected();"
       div ->
