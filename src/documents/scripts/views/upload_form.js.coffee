@@ -16,7 +16,7 @@ class UploadForm extends View
     console.log('File selected.')
 
   startUploading: ->
-    console.log('Start Uploading')
+    console.log('Start Uploading.')
 
 # Export
 module.exports = {UploadForm}
