@@ -18,7 +18,7 @@ server  = require('http').createServer(app)
 #                                   redis: host: 'localhost', port: 6379
 #                                           transformer: 'websockets')
           
-Appun.configure ->
+app.configure ->
   app.set('port', process.env.PORT or 5000)
   app.use(express.favicon())
   app.use(express.logger('dev'))

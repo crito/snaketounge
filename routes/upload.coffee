@@ -1,5 +1,6 @@
-fs     = require('fs')
-{join} = require('path')
+fs              = require('fs')
+{join,basename} = require('path')
+
 redis  = require('redis')
 Q      = require('q')
 
@@ -15,5 +16,4 @@ exports.create = (req, res) ->
     .then((path) ->
       Q.ninvoke(client, "lpush", "files", newPath)
         .then(->
-          console.log(path)
-          res.redirect('')))
+          res.send(JSON.stringify({path: "/download/#{basename(path)}"}))))

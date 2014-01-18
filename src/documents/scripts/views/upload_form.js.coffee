@@ -17,11 +17,20 @@ class UploadForm extends View
 
   startUploading: ->
     formData = new FormData(@$el.find('form')[0])
-    request  = new XMLHttpRequest
+    #request  = new XMLHttpRequest
 
-    request.open("POST", "/upload")
-    request.send(formData)
-    console.log('Start Uploading.')
+    #request.open("POST", "/upload")
+    #request.send(formData)
+    #console.log('Start Uploading.')
+    
+    $.ajax('/upload', {
+      processData: false,
+      contentType: false,
+      type: 'POST',
+      data: formData})
+      .done((data) ->
+        console.log typeof data
+        window.location.replace(JSON.parse(data).path))
 
 # Export
 module.exports = {UploadForm}
