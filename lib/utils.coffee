@@ -6,6 +6,12 @@ Q     = require('q')
 mime  = require('mime')
 redis = require('redis')
 
+createRedisClient = () ->
+  cfg = require('config').redis
+  opts = [cfg.port, cfg.host]
+  if cfg.auth then opts.push({auth_pass: cfg.auth})
+  redis.createClient.apply(null, opts)
+
 moveFile = Q.denodeify(fs.rename)
 
 # Return a random hex string
@@ -17,8 +23,9 @@ randomHexString = ->
 # Returns a promise, that gets resolved with the new file location and mime
 # type.
 handleUpload = (file) ->
+  {upload_dir} = require('config')
   fileType = mime.lookup(file.path)
-  newPath  = join(process.cwd(), 'uploads', randomHexString())
+  newPath  = join(upload_dir, randomHexString())
   defer    = Q.defer()
 
   moveFile(file.path, newPath)
@@ -32,7 +39,7 @@ handleUpload = (file) ->
 # Pop and push files to the queue
 popAndPush = (pushFile) ->
   defer = Q.defer()
-  client = redis.createClient()
+  client = createRedisClient()
   
   Q.ninvoke(client, "rpop", "files")
     .then((popFile) ->

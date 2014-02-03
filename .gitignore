@@ -2,3 +2,5 @@ node_modules
 out
 docs
 uploads
+.docpad.db
+config/runtime.json
