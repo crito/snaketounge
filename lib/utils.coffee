@@ -13,7 +13,7 @@ createRedisClient = () ->
   redis.createClient.apply(null, opts)
 
 moveFile = Q.denodeify(fs.rename)
-ensureDir = Q.denodeify(fs.mkdir)
+ensureDir = Q.denodeify(require('mkdirp'))
 
 # Return a random hex string
 randomHexString = ->
@@ -30,22 +30,23 @@ handleUpload = (file) ->
   defer    = Q.defer()
 
   ensureDir(upload_dir)
-    .then(-> moveFile(file.path, newPath)
-      .then(-> defer.resolve(
+    .then(-> moveFile(file.path, newPath))
+    .then(->
+      defer.resolve(
         path: newPath
         mime: fileType
-        name: file.originalFilename)))    
+        name: file.originalFilename))
   defer.promise
 
 # Pop and push files to the queue
 popAndPush = (pushFile) ->
   defer = Q.defer()
   client = createRedisClient()
-  
+  pushFile = JSON.stringify(pushFile)
+
   Q.ninvoke(client, "rpop", "files")
-    .then((popFile) ->
-       Q.ninvoke(client, "lpush", "files", JSON.stringify(pushFile))
-        .then(-> defer.resolve(JSON.parse(popFile))))
+    .then((popFile) -> Q.ninvoke(client, "lpush", "files", pushFile)
+      .then(-> defer.resolve(JSON.parse(popFile))))
   defer.promise
 
 module.exports =

@@ -6,7 +6,12 @@ Q      = require('q')
 
 utils = require('../lib/utils')
 
+handleError = (res) ->
+  -> res.send(500, 'something blew up')
+
 exports.create = (req, res) ->
-  utils.handleUpload(req.files.myfile)
-    .then(utils.popAndPush)
-    .then((file) -> res.send(JSON.stringify(file)))
+  err = handleError(res)
+
+  utils.handleUpload(req.files.myfile, err)
+    .then(utils.popAndPush, err)
+    .done((file) -> res.send(JSON.stringify(file)))
