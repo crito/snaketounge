@@ -1,8 +1,8 @@
-utils = require('../lib/utils')
-store = require('../lib/storage')
+utils   = require('../lib/utils')
+helpers = require('../lib/helpers')
 
 exports.create = (req, res) ->
-  store(req.files.myfile)
+  helpers.handleUpload(req.files.myfile)
     .then(utils.popAndPush)
     .then((file) -> res.send(JSON.stringify(file)))
     .catch(utils.handleError(res))

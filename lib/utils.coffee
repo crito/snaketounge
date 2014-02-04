@@ -1,7 +1,6 @@
 crypto = require('crypto')
 
 Q     = require('q')
-mime  = require('mime')
 redis = require('redis')
 
 handleError = (res) ->
@@ -27,7 +26,6 @@ popAndPush = (pushFile) ->
   deferred = Q.defer()
   client   = createRedisClient()
   pushFile = JSON.stringify(pushFile)
-
 
   #FIXME: Add error handler to promise chain
   Q.ninvoke(client, "rpop", "files")
