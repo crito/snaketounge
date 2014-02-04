@@ -6,6 +6,9 @@ Q     = require('q')
 mime  = require('mime')
 redis = require('redis')
 
+handleError = (res) ->
+  -> res.send(500, 'something blew up')
+
 createRedisClient = () ->
   cfg = require('config').redis
   opts = [cfg.port, cfg.host]
@@ -27,28 +30,30 @@ handleUpload = (file) ->
   {upload_dir} = require('config')
   fileType = mime.lookup(file.path)
   newPath  = join(upload_dir, randomHexString())
-  defer    = Q.defer()
+  deferred = Q.defer()
 
   ensureDir(upload_dir)
     .then(-> moveFile(file.path, newPath))
     .then(->
-      defer.resolve(
+      deferred.resolve(
         path: newPath
         mime: fileType
         name: file.originalFilename))
-  defer.promise
+  deferred.promise
 
 # Pop and push files to the queue
 popAndPush = (pushFile) ->
-  defer = Q.defer()
-  client = createRedisClient()
+  deferred = Q.defer()
+  client   = createRedisClient()
   pushFile = JSON.stringify(pushFile)
 
+  #FIXME: Add error handler to promise chain
   Q.ninvoke(client, "rpop", "files")
     .then((popFile) -> Q.ninvoke(client, "lpush", "files", pushFile)
-      .then(-> defer.resolve(JSON.parse(popFile))))
-  defer.promise
+      .then(-> deferred.resolve(JSON.parse(popFile))))
+  deferred.promise
 
 module.exports =
+  handleError: handleError
   handleUpload: handleUpload
   popAndPush: popAndPush
