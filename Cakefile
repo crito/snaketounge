@@ -152,6 +152,15 @@ actions =
     spawn(COFFEE, ['app.coffee'], {stdio: 'inherit', cwd: APP_DIR})
       .on('close', safe next)
 
+  purge: (opts, next) ->
+    (next = opts; opts = {}) unless next?
+    if process.env.NODE_ENV in ['production', 'staging']
+      cfg = require('config').redis
+      {purgeQueue} = require('./lib/helpers')
+      purgeQueue(cfg.purgeQueue)
+    else
+      console.log("Not on production.")
+      
 # =====================================
 # Commands
 
@@ -166,6 +175,7 @@ commands =
   prepublish:  'prepare our package for publishing'
   publish:     'publish our package (runs prepublish)'
   server:      'start the http server'
+  purge:       'purge stale files'
 
 Object.keys(commands).forEach (key) ->
   description = commands[key]

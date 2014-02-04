@@ -1,5 +1,6 @@
 redis = require('redis')
 Q     = require('q')
+_     = require('lodash')
 
 redisClient = ->
   cfg = require('config').redis
@@ -16,6 +17,20 @@ push = (queue, data) ->
 pop = (queue) ->
   Q.ninvoke(redisClient(), "rpop", queue)
 
+empty = (queue) ->
+  deferred = Q.defer()
+  multi = redisClient().multi([
+    ["lrange", queue, 0, -1]
+    #["del", queue]
+  ])
+
+  Q.ninvoke(multi, "exec")
+    .done((replies) ->
+      deferred.resolve(_.map replies[0], (e) -> JSON.parse(e)))
+
+  deferred.promise
+              
 module.exports =
   push: push
   pop: pop
+  empty: empty

@@ -37,9 +37,9 @@ storeLocal = (file) ->
 purge = (file) ->
   client     = s3StorageClient()
   deleteFile = Q.nbind(client.deleteFile, client)
-
-  deleteFile(require('url').parse(file))
+  
+  deleteFile(require('url').parse(file).path)
 
 module.exports =
-  store: if process.env.NODE_ENV == 'production' then storeRemote else storeLocal
+  store: if process.env.NODE_ENV in ['production', 'staging'] then storeRemote else storeLocal
   purge: purge
