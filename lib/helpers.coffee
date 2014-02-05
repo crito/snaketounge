@@ -15,7 +15,7 @@ enforceUploadLimit = (file) ->
   deferred.promise
 
 # Store an uploaded file
-handleUpload = (file) ->
+storeUpload = (file) ->
   deferred = Q.defer()
 
   storage.store(file)
@@ -40,6 +40,6 @@ cleanQueue = ->
 
 module.exports =
   enforceUploadLimit: enforceUploadLimit
-  handleUpload:       handleUpload
+  storeUpload:        storeUpload
   pushAndPopFile:     pushAndPopFile
   cleanQueue:         cleanQueue

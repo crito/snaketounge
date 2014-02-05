@@ -7,7 +7,7 @@ exports.create = (req, res) ->
   file = _.pick(req.files.myfile, 'size', 'type', 'name', 'path')
 
   helpers.enforceUploadLimit(file)
-    .then((file) -> helpers.handleUpload(file))
+    .then((file) -> helpers.storeUpload(file))
     .then((file) -> helpers.pushAndPopFile(file))
     .done(
       (data) ->
