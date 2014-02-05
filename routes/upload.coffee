@@ -9,4 +9,7 @@ exports.create = (req, res) ->
   helpers.enforceUploadLimit(file)
     .then((file) -> helpers.handleUpload(file))
     .then((file) -> helpers.pushAndPopFile(file))
-    .done(utils.responseWithSuccess(res), utils.responseWithError(res))
+    .then(utils.responseWithSuccess(res), utils.responseWithError(res))
+    .done(
+      helpers.trackMetric("snaketounge.uploads"),
+      helpers.trackMetric("snaketounge.failed_uploads"))

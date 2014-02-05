@@ -10,3 +10,6 @@ module.exports =
     secret: process.env.AWS_SECRET_ACCESS_KEY
     bucket: process.env.S3_BUCKET_NAME
     region: process.env.S3_REGION
+  librato:
+    email: process.env.LIBRATO_EMAIL
+    token: process.env.LIBRATO_TOKEN

@@ -1,4 +1,5 @@
 express = require('express')
+
 http    = require('http')
 path    = require('path')
 
@@ -16,6 +17,19 @@ app.configure ->
 
 app.configure 'development', ->
   app.use(express.errorHandler())
+
+app.configure 'production', ->
+  librato = require('librato-node')
+  cfg = require('config').librato
+
+  librato.configure({email: cfg.email, token: cfg.token})
+  librato.start()
+  app.use(librato.middleware(
+    requestCountKey: 'snaketounge.request_count'
+    responseTimeKey: 'snaketounge.response_time'))
+    
+  process.once 'exit', ->
+    librato.stop()
 
 docpadInstanceConfiguration =
   # Give it our express application and http server
@@ -35,5 +49,5 @@ docpadInstance = require('docpad').createInstance docpadInstanceConfiguration, (
 app.set('docpadInstance', docpadInstance)
   
 require('./routes')(app)
-
+  
 server.listen(app.get('port'))
