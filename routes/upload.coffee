@@ -1,9 +1,12 @@
+_ = require('lodash')
+
 utils   = require('../lib/utils')
 helpers = require('../lib/helpers')
 
 exports.create = (req, res) ->
-  helpers.handleUpload(req.files.myfile)
-    .then(helpers.popAndPush)
-    .catch(utils.logPromiseFailure)
-    .then((file) -> res.send(JSON.stringify(file)))
-    .catch(utils.handleError(res))
+  file = _.pick(req.files.myfile, 'size', 'type', 'name', 'path')
+
+  helpers.enforceUploadLimit(file)
+    .then((file) -> helpers.handleUpload(file))
+    .then((file) -> helpers.pushAndPopFile(file))
+    .done(utils.responseWithSuccess(res), utils.responseWithError(res))

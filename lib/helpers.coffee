@@ -1,55 +1,47 @@
-mime = require('mime')
 Q    = require('q')
 _    = require('lodash')
 
-utils            = require('./utils')
-{store,purge}    = require('./storage')
-{pop,push,empty} = require('./queue')
+utils   = require('./utils')
+storage = require('./storage')
+queue   = require('./queue')
 
-handleUpload = (file) ->
-  fileType = mime.lookup(file.path)
+
+# Refuse files that are too big
+enforceUploadLimit = (file) ->
   deferred = Q.defer()
 
-  store(file)
-    .catch(utils.logPromiseFailure)
-    .done((newPath) ->
-      deferred.resolve(
-        path: newPath
-        mime: fileType
-        name: file.originalFilename))
+  if storage.isAllowedSize(file.size)
+    deferred.resolve(file)
+  else
+     deferred.reject(new Error('File is too big'))
   deferred.promise
 
-# Pop and push files to the queue
-popAndPush = (pushFile) ->
+# Store an uploaded file
+handleUpload = (file) ->
   deferred = Q.defer()
-  pushFile = JSON.stringify(pushFile)
+
+  storage.store(file)
+    .done((newPath) ->
+      file.path = newPath
+      deferred.resolve(file))
+  deferred.promise
+
+# Pop and push files to the queue.
+pushAndPopFile = (pushFile) ->
+  deferred = Q.defer()
   
-  {activeQueue,purgeQueue} = require('config').redis
-
-  #FIXME: Add error handler to promise chain
-  pop(activeQueue)
-    .then((popFile) ->
-      Q.all([
-        push(purgeQueue, popFile),
-        push(activeQueue, pushFile)
-      ]).then(-> deferred.resolve(JSON.parse(popFile))))
-
+  queue.update(pushFile)
+    .done((popFile) -> deferred.resolve(popFile))
   deferred.promise
       
 # Remove stale uploads from the purge queue and the remote storage
-purgeQueue = (queue) ->
-  purgeOrRequeue = (file) ->
-    console.log("Purge #{file.path}")
-    purge(file.path)
-      .fail(->
-        # FIXME: The requeueing isn't yet tested
-        push(purgeQueue, JSON.stringify(file)))
-
-  empty(queue)
-    .then((elems) ->
-      Q.allSettled(_.map(elems, (file) -> purgeOrRequeue(file))))
+cleanQueue = ->
+  queue.cleanup()
+    .done((elems) ->
+      Q.allSettled(_.map(elems, (file) -> storage.purge(file.path))))
 
 module.exports =
-  handleUpload: handleUpload
-  popAndPush: popAndPush
-  purgeQueue: purgeQueue
+  enforceUploadLimit: enforceUploadLimit
+  handleUpload:       handleUpload
+  pushAndPopFile:     pushAndPopFile
+  cleanQueue:         cleanQueue

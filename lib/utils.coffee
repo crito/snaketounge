@@ -1,9 +1,10 @@
 crypto = require('crypto')
 
-Q     = require('q')
+responseWithSuccess = (res) ->
+  (data) -> res.send(JSON.stringify(data))
 
-handleError = (res) ->
-  -> res.send(500, 'something blew up')
+responseWithError = (res) ->
+  (reason) -> res.send(500, {error: reason.message})
 
 # Return a random hex string
 randomHexString = ->
@@ -11,10 +12,10 @@ randomHexString = ->
   crypto.createHash('sha1').update(seed).digest('hex')
 
 # Log the reason if a promise fails
-logPromiseFailure = (reason) ->
-  console.log(reason)
+logPromiseFailure = console.log
 
 module.exports =
-  handleError: handleError
-  randomHexString: randomHexString
-  logPromiseFailure: logPromiseFailure
+  responseWithError:   responseWithError
+  responseWithSuccess: responseWithSuccess
+  randomHexString:     randomHexString
+  logPromiseFailure:   logPromiseFailure
