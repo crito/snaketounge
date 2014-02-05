@@ -15,9 +15,6 @@ s3StorageClient = () ->
     bucket: cfg.bucket
     region: cfg.region)
 
-isAllowedSize = (size) ->
-  if size > require('config').maxUploadSize then false else true
-
 storeRemote = (file) ->
   client  = s3StorageClient()
   putFile = Q.nbind(client.putFile, client)
@@ -44,7 +41,6 @@ purgeRemote = (file) ->
   deleteFile(require('url').parse(file).path)
 
 module.exports =
-  isAllowedSize: isAllowedSize
   store: if process.env.NODE_ENV in ['production', 'staging']
            storeRemote
          else

@@ -3,16 +3,6 @@ _       = require('lodash')
 
 storage = require('./storage')
 queue   = require('./queue')
-  
-# Refuse files that are too big
-enforceUploadLimit = (file) ->
-  deferred = Q.defer()
-
-  if storage.isAllowedSize(file.size)
-    deferred.resolve(file)
-  else
-     deferred.reject(new Error('File is too big'))
-  deferred.promise
 
 # Store an uploaded file
 storeUpload = (file) ->
@@ -39,7 +29,6 @@ cleanQueue = ->
       Q.allSettled(_.map(elems, (file) -> storage.purge(file.path))))
 
 module.exports =
-  enforceUploadLimit: enforceUploadLimit
-  storeUpload:        storeUpload
-  pushAndPopFile:     pushAndPopFile
-  cleanQueue:         cleanQueue
+  storeUpload:    storeUpload
+  pushAndPopFile: pushAndPopFile
+  cleanQueue:     cleanQueue

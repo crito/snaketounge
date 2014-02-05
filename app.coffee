@@ -1,10 +1,10 @@
 express = require('express')
 
-http    = require('http')
-path    = require('path')
+http = require('http')
+path = require('path')
 
-app     = express()
-server  = require('http').createServer(app)
+app    = express()
+server = require('http').createServer(app)
 
 app.configure ->
   app.set('port', process.env.PORT or 5000)

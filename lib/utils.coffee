@@ -8,7 +8,7 @@ responseWithError = (res) ->
   (reason) -> res.send(500, {error: reason.message})
 
 # Do some tracking
-trackMetric = (metric) ->
+incrementMetric = (metric) ->
   if process.env.NODE_ENV == 'production'
     librato.increment metric
 
@@ -21,7 +21,7 @@ randomHexString = ->
 logPromiseFailure = console.log
 
 module.exports =
-  trackMetric:         trackMetric
+  incrementMetric:     incrementMetric
   responseWithError:   responseWithError
   responseWithSuccess: responseWithSuccess
   randomHexString:     randomHexString
