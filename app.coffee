@@ -26,7 +26,8 @@ app.configure 'production', ->
   librato.start()
   app.use(librato.middleware(
     requestCountKey: 'snaketounge.request_count'
-    responseTimeKey: 'snaketounge.response_time'))
+    responseTimeKey: 'snaketounge.response_time'
+  ))
     
   process.once 'exit', ->
     librato.stop()

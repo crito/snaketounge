@@ -1,16 +1,8 @@
 Q       = require('q')
 _       = require('lodash')
-librato = require('librato-node')
 
-utils   = require('./utils')
 storage = require('./storage')
 queue   = require('./queue')
-
-# Do some tracking
-trackMetric = (metric) ->
-  ->
-    if process.env.NODE_ENV == 'production'
-      librato.increment metric
   
 # Refuse files that are too big
 enforceUploadLimit = (file) ->
@@ -47,7 +39,6 @@ cleanQueue = ->
       Q.allSettled(_.map(elems, (file) -> storage.purge(file.path))))
 
 module.exports =
-  trackMetric:        trackMetric
   enforceUploadLimit: enforceUploadLimit
   handleUpload:       handleUpload
   pushAndPopFile:     pushAndPopFile

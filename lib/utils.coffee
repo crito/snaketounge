@@ -1,10 +1,16 @@
-crypto = require('crypto')
+crypto  = require('crypto')
+librato = require('librato-node')
 
 responseWithSuccess = (res) ->
   (data) -> res.send(JSON.stringify(data))
 
 responseWithError = (res) ->
   (reason) -> res.send(500, {error: reason.message})
+
+# Do some tracking
+trackMetric = (metric) ->
+  if process.env.NODE_ENV == 'production'
+    librato.increment metric
 
 # Return a random hex string
 randomHexString = ->
@@ -15,6 +21,7 @@ randomHexString = ->
 logPromiseFailure = console.log
 
 module.exports =
+  trackMetric:         trackMetric
   responseWithError:   responseWithError
   responseWithSuccess: responseWithSuccess
   randomHexString:     randomHexString
